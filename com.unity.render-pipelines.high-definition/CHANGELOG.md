@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added cascade shadow visualisation toggle in HD shadow settings
 - Added icons for assets.
 - Added replace blending mode for distortion
+- Added basic distance fade for density volumes
+- Added decal master node for shader graph
+- Added HD unlit master node (Cross Pipeline one is name Unlit)
+- Added new Rendering Queue in materials.
+- Added post-processing features (work in progress)
+- Post-processing now uses the generic volume framework
+- New depth-of-field, bloom, panini projection effects (motion blur is currently missing)
+- Exposure is now done as a pre-exposition pass, the whole system has been revamped
+- Added physical camera support where applicable
+- Added more color grading tools
+- Added changelog level for Shader Variant stripping
 
 ### Fixed
 - Fixed logic to disable FPTL with stereo rendering
@@ -28,6 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed usage of SSR with transparent on all master node
 - Fixed SSR and microshadowing on fabric material
 - Fixed blit pass for stereo rendering
+- Fixed lightlist bounds for stereo rendering
 - Fixed windows and in-game DebugMenu sync.
 - Fixed FrameSettings' LitShaderMode sync when opening DebugMenu.
 - Fixed Metal specific issues with decals, hitting a sampler limit and compiling AxF shader
@@ -48,6 +60,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed slowdow when enabling Fabric convolution in HDRP asset
 - Fixed specularAA not compiling in StackLit Master node
 - Fixed material debug view with stereo rendering
+- Fixed material's RenderQueue edition in default view.
+- Fixed banding issues within volumetric density buffer
+- Fixed missing multicompile for MSAA for AxF
+- Fixed max number of keyword reach [256] issue. Several shader feature are now local
 
 ### Changed
 - ColorPyramid compute shader passes is swapped to pixel shader passes on platforms where the later is faster (Nintendo Switch).
@@ -61,6 +77,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add command buffer parameter to all Bind() method of material
 - Lit shader mode now default to Deferred to reduce build time
 - Update UI of Emission parameters in shaders
+- Improve shader variant stripping including shader graph variant
+- Refactored render loop to render realtime probes visible per camera
+- Enable SRP batcher by default
+- Shader code refactor: Rename LIGHTLOOP_SINGLE_PASS => LIGHTLOOP_DISABLE_TILE_AND_CLUSTER and clean all usage of LIGHTLOOP_TILE_PASS
+- Shader code refactor: Move pragma definition of vertex and pixel shader inside pass + Move SURFACE_GRADIENT definition in XXXData.hlsl
 
 ## [5.2.0-preview] - 2018-11-27
 

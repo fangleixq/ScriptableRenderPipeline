@@ -12,7 +12,7 @@ using UnityEngine.Experimental.Rendering.HDPipeline;
 namespace UnityEditor.Experimental.Rendering.HDPipeline
 {
     [Serializable]
-    [Title("Master", "Lit")]
+    [Title("Master", "HDRP/Lit")]
     [FormerName("UnityEditor.ShaderGraph.HDLitMasterNode")]
     class HDLitMasterNode : MasterNode<IHDLitSubShader>, IMayRequirePosition, IMayRequireNormal, IMayRequireTangent
     {
@@ -199,6 +199,23 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                     return;
 
                 m_AlphaMode = value;
+                Dirty(ModificationScope.Graph);
+            }
+        }
+
+        //could be either BaseUnlitGUI.OpaqueRenderQueue or BaseUnlitGUI.TransparentRenderQueue
+        [SerializeField]
+        HDRenderQueue.RenderQueueType m_RenderingPass = HDRenderQueue.RenderQueueType.Opaque;
+
+        public HDRenderQueue.RenderQueueType renderingPass
+        {
+            get { return m_RenderingPass; }
+            set
+            {
+                if (m_RenderingPass == value)
+                    return;
+
+                m_RenderingPass = value;
                 Dirty(ModificationScope.Graph);
             }
         }

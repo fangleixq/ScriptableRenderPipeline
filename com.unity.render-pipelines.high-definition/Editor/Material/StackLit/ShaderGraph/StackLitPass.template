@@ -33,7 +33,7 @@ Pass
     // Variant Definitions
     //
     // (active field translations to some StackLit.shader defines that were switched into
-    // variants with shader_feature : some are no longer needed as were only used in 
+    // variants with shader_feature : some are no longer needed as were only used in
     // StackLitData.hlsl)
     //-------------------------------------------------------------------------------------
 
@@ -176,9 +176,6 @@ Pass
 
     #pragma vertex Vert
     #pragma fragment Frag
-
-    // This will be enabled in an upcoming change.
-    // #define SURFACE_GRADIENT
 
     // If we use subsurface scattering, enable output split lighting
     #if defined(_MATERIAL_FEATURE_SUBSURFACE_SCATTERING) && !defined(_SURFACE_TYPE_TRANSPARENT)
@@ -375,7 +372,7 @@ $include("SharedCode.template.hlsl")
         GetNormalWS(fragInputs, normalTS, surfaceData.normalWS);
 
         surfaceData.bentNormalWS = surfaceData.normalWS;
-        surfaceData.coatNormalWS = surfaceData.normalWS;
+        surfaceData.coatNormalWS = surfaceData.geomNormalWS;
         $BentNormal: GetNormalWS(fragInputs, surfaceDescription.BentNormal, surfaceData.bentNormalWS);
         $CoatNormal: GetNormalWS(fragInputs, surfaceDescription.CoatNormal, surfaceData.coatNormalWS);
 

@@ -118,7 +118,6 @@ Shader "HDRP/LitTessellation"
         _TransmittanceColor("Transmittance Color", Color) = (1.0, 1.0, 1.0)
         _TransmittanceColorMap("TransmittanceColorMap", 2D) = "white" {}
         _ATDistance("Transmittance Absorption Distance", Float) = 1.0
-        [ToggleUI] _PreRefractionPass("PreRefractionPass", Float) = 0.0
 
         // Stencil state
         [HideInInspector] _StencilRef("_StencilRef", Int) = 2 // StencilLightingUsage.RegularLighting  (fixed at compile time)
@@ -226,54 +225,54 @@ Shader "HDRP/LitTessellation"
     // Variant
     //-------------------------------------------------------------------------------------
 
-    #pragma shader_feature _ALPHATEST_ON
-    #pragma shader_feature _DEPTHOFFSET_ON
-    #pragma shader_feature _DOUBLESIDED_ON
-    #pragma shader_feature _ _TESSELLATION_DISPLACEMENT _PIXEL_DISPLACEMENT
-    #pragma shader_feature _VERTEX_DISPLACEMENT_LOCK_OBJECT_SCALE
-    #pragma shader_feature _DISPLACEMENT_LOCK_TILING_SCALE
-    #pragma shader_feature _PIXEL_DISPLACEMENT_LOCK_OBJECT_SCALE
-    #pragma shader_feature _VERTEX_WIND
-    #pragma shader_feature _TESSELLATION_PHONG
-    #pragma shader_feature _ _REFRACTION_PLANE _REFRACTION_SPHERE
+    #pragma shader_feature_local _ALPHATEST_ON
+    #pragma shader_feature_local _DEPTHOFFSET_ON
+    #pragma shader_feature_local _DOUBLESIDED_ON
+    #pragma shader_feature_local _ _TESSELLATION_DISPLACEMENT _PIXEL_DISPLACEMENT
+    #pragma shader_feature_local _VERTEX_DISPLACEMENT_LOCK_OBJECT_SCALE
+    #pragma shader_feature_local _DISPLACEMENT_LOCK_TILING_SCALE
+    #pragma shader_feature_local _PIXEL_DISPLACEMENT_LOCK_OBJECT_SCALE
+    #pragma shader_feature_local _VERTEX_WIND
+    #pragma shader_feature_local _TESSELLATION_PHONG
+    #pragma shader_feature_local _ _REFRACTION_PLANE _REFRACTION_SPHERE
 
-    #pragma shader_feature _ _EMISSIVE_MAPPING_PLANAR _EMISSIVE_MAPPING_TRIPLANAR
-    #pragma shader_feature _ _MAPPING_PLANAR _MAPPING_TRIPLANAR
-    #pragma shader_feature _NORMALMAP_TANGENT_SPACE
-    #pragma shader_feature _ _REQUIRE_UV2 _REQUIRE_UV3
+    #pragma shader_feature_local _ _EMISSIVE_MAPPING_PLANAR _EMISSIVE_MAPPING_TRIPLANAR
+    #pragma shader_feature_local _ _MAPPING_PLANAR _MAPPING_TRIPLANAR
+    #pragma shader_feature_local _NORMALMAP_TANGENT_SPACE
+    #pragma shader_feature_local _ _REQUIRE_UV2 _REQUIRE_UV3
 
-    #pragma shader_feature _NORMALMAP
-    #pragma shader_feature _MASKMAP
-    #pragma shader_feature _BENTNORMALMAP
-    #pragma shader_feature _EMISSIVE_COLOR_MAP
-    #pragma shader_feature _ENABLESPECULAROCCLUSION
-    #pragma shader_feature _HEIGHTMAP
-    #pragma shader_feature _TANGENTMAP
-    #pragma shader_feature _ANISOTROPYMAP
-    #pragma shader_feature _DETAIL_MAP
-    #pragma shader_feature _SUBSURFACE_MASK_MAP
-    #pragma shader_feature _THICKNESSMAP
-    #pragma shader_feature _IRIDESCENCE_THICKNESSMAP
-    #pragma shader_feature _SPECULARCOLORMAP
-    #pragma shader_feature _TRANSMITTANCECOLORMAP
+    #pragma shader_feature_local _NORMALMAP
+    #pragma shader_feature_local _MASKMAP
+    #pragma shader_feature_local _BENTNORMALMAP
+    #pragma shader_feature_local _EMISSIVE_COLOR_MAP
+    #pragma shader_feature_local _ENABLESPECULAROCCLUSION
+    #pragma shader_feature_local _HEIGHTMAP
+    #pragma shader_feature_local _TANGENTMAP
+    #pragma shader_feature_local _ANISOTROPYMAP
+    #pragma shader_feature_local _DETAIL_MAP
+    #pragma shader_feature_local _SUBSURFACE_MASK_MAP
+    #pragma shader_feature_local _THICKNESSMAP
+    #pragma shader_feature_local _IRIDESCENCE_THICKNESSMAP
+    #pragma shader_feature_local _SPECULARCOLORMAP
+    #pragma shader_feature_local _TRANSMITTANCECOLORMAP
 
-    #pragma shader_feature _DISABLE_DECALS
-    #pragma shader_feature _DISABLE_SSR
-    #pragma shader_feature _ENABLE_GEOMETRIC_SPECULAR_AA
+    #pragma shader_feature_local _DISABLE_DECALS
+    #pragma shader_feature_local _DISABLE_SSR
+    #pragma shader_feature_local _ENABLE_GEOMETRIC_SPECULAR_AA
 
     // Keyword for transparent
     #pragma shader_feature _SURFACE_TYPE_TRANSPARENT
-    #pragma shader_feature _ _BLENDMODE_ALPHA _BLENDMODE_ADD _BLENDMODE_PRE_MULTIPLY
-    #pragma shader_feature _BLENDMODE_PRESERVE_SPECULAR_LIGHTING
-    #pragma shader_feature _ENABLE_FOG_ON_TRANSPARENT
+    #pragma shader_feature_local _ _BLENDMODE_ALPHA _BLENDMODE_ADD _BLENDMODE_PRE_MULTIPLY
+    #pragma shader_feature_local _BLENDMODE_PRESERVE_SPECULAR_LIGHTING
+    #pragma shader_feature_local _ENABLE_FOG_ON_TRANSPARENT
 
     // MaterialFeature are used as shader feature to allow compiler to optimize properly
-    #pragma shader_feature _MATERIAL_FEATURE_SUBSURFACE_SCATTERING
-    #pragma shader_feature _MATERIAL_FEATURE_TRANSMISSION
-    #pragma shader_feature _MATERIAL_FEATURE_ANISOTROPY
-    #pragma shader_feature _MATERIAL_FEATURE_CLEAR_COAT
-    #pragma shader_feature _MATERIAL_FEATURE_IRIDESCENCE
-    #pragma shader_feature _MATERIAL_FEATURE_SPECULAR_COLOR
+    #pragma shader_feature_local _MATERIAL_FEATURE_SUBSURFACE_SCATTERING
+    #pragma shader_feature_local _MATERIAL_FEATURE_TRANSMISSION
+    #pragma shader_feature_local _MATERIAL_FEATURE_ANISOTROPY
+    #pragma shader_feature_local _MATERIAL_FEATURE_CLEAR_COAT
+    #pragma shader_feature_local _MATERIAL_FEATURE_IRIDESCENCE
+    #pragma shader_feature_local _MATERIAL_FEATURE_SPECULAR_COLOR
 
     // enable dithering LOD crossfade
     #pragma multi_compile _ LOD_FADE_CROSSFADE
@@ -288,8 +287,6 @@ Shader "HDRP/LitTessellation"
 
     #define TESSELLATION_ON
 
-    // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-    #define SURFACE_GRADIENT
     // This shader support vertex modification
     #define HAVE_VERTEX_MODIFICATION
     #define HAVE_TESSELLATION_MODIFICATION
@@ -328,10 +325,6 @@ Shader "HDRP/LitTessellation"
     // LitShading.hlsl implements the light loop API.
     // LitData.hlsl is included here, LitShading.hlsl is included below for shading passes only.
 
-    // All our shaders use same name for entry point
-    #pragma vertex Vert
-    #pragma fragment Frag
-
     ENDHLSL
 
     SubShader
@@ -350,9 +343,6 @@ Shader "HDRP/LitTessellation"
 
             // Note: Require _ObjectId and _PassValue variables
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #define SHADERPASS SHADERPASS_DEPTH_ONLY
             #define SCENESELECTIONPASS // This will drive the output of the scene selection shader
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
@@ -361,6 +351,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/ShaderPass/LitDepthPass.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassDepthOnly.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -383,9 +378,6 @@ Shader "HDRP/LitTessellation"
             }
 
             HLSLPROGRAM
-
-            #pragma hull Hull
-            #pragma domain Domain
 
             #pragma multi_compile _ DEBUG_DISPLAY
             #pragma multi_compile _ LIGHTMAP_ON
@@ -412,6 +404,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
 
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassGBuffer.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -442,6 +439,9 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassLightTransport.hlsl"
 
+            #pragma vertex Vert
+            #pragma fragment Frag
+
             ENDHLSL
         }
 
@@ -460,9 +460,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #define SHADERPASS SHADERPASS_SHADOWS
             #define USE_LEGACY_UNITY_MATRIX_VARIABLES
             #define CUTOFF_TRANSPARENT_DEPTH_SHADOWS
@@ -472,6 +469,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/ShaderPass/LitDepthPass.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassDepthOnly.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -496,9 +498,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             // In deferred, depth only pass don't output anything.
             // In forward it output the normal buffer
             #pragma multi_compile _ WRITE_NORMAL_BUFFER
@@ -517,6 +516,11 @@ Shader "HDRP/LitTessellation"
 
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassDepthOnly.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -542,9 +546,6 @@ Shader "HDRP/LitTessellation"
             HLSLPROGRAM
             #pragma multi_compile _ WRITE_NORMAL_BUFFER
             #pragma multi_compile _ WRITE_MSAA_DEPTH
-            // TODO: Tesselation can't work with velocity for now...
-            #pragma hull Hull
-            #pragma domain Domain
 
             #define SHADERPASS SHADERPASS_VELOCITY
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
@@ -557,6 +558,12 @@ Shader "HDRP/LitTessellation"
 			#endif
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassVelocity.hlsl"
+
+            // TODO: Tesselation can't work with velocity for now...
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -574,9 +581,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #define SHADERPASS SHADERPASS_DISTORTION
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Material.hlsl"
@@ -584,6 +588,11 @@ Shader "HDRP/LitTessellation"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/ShaderPass/LitDistortionPass.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassDistortion.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -599,9 +608,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #define SHADERPASS SHADERPASS_DEPTH_ONLY
             #define CUTOFF_TRANSPARENT_DEPTH_PREPASS
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
@@ -610,6 +616,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/ShaderPass/LitDepthPass.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassDepthOnly.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }
@@ -626,9 +637,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #pragma multi_compile _ DEBUG_DISPLAY
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
@@ -638,11 +646,8 @@ Shader "HDRP/LitTessellation"
             #pragma multi_compile DECALS_OFF DECALS_3RT DECALS_4RT
             
             // Supported shadow modes per light type
-            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH
+            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH SHADOW_VERY_HIGH
 
-            // #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/Lighting/Forward.hlsl"
-            //#pragma multi_compile LIGHTLOOP_SINGLE_PASS LIGHTLOOP_TILE_PASS
-            #define LIGHTLOOP_TILE_PASS
             #define USE_CLUSTERED_LIGHTLIST // There is not FPTL lighting when using transparent
 
             #define SHADERPASS SHADERPASS_FORWARD
@@ -671,6 +676,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassForward.hlsl"
 
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
+
             ENDHLSL
         }
 
@@ -695,9 +705,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #pragma multi_compile _ DEBUG_DISPLAY
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
@@ -707,11 +714,8 @@ Shader "HDRP/LitTessellation"
             #pragma multi_compile DECALS_OFF DECALS_3RT DECALS_4RT
             
             // Supported shadow modes per light type
-            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH
+            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH SHADOW_VERY_HIGH
 
-            // #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/Lighting/Forward.hlsl"
-            //#pragma multi_compile LIGHTLOOP_SINGLE_PASS LIGHTLOOP_TILE_PASS
-            #define LIGHTLOOP_TILE_PASS
             #pragma multi_compile USE_FPTL_LIGHTLIST USE_CLUSTERED_LIGHTLIST
 
             #define SHADERPASS SHADERPASS_FORWARD
@@ -745,6 +749,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassForward.hlsl"
 
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
+
             ENDHLSL
         }
 
@@ -759,9 +768,6 @@ Shader "HDRP/LitTessellation"
 
             HLSLPROGRAM
 
-            #pragma hull Hull
-            #pragma domain Domain
-
             #define SHADERPASS SHADERPASS_DEPTH_ONLY
             #define CUTOFF_TRANSPARENT_DEPTH_POSTPASS
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
@@ -770,6 +776,11 @@ Shader "HDRP/LitTessellation"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/ShaderPass/LitDepthPass.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitData.hlsl"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPassDepthOnly.hlsl"
+
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma hull Hull
+            #pragma domain Domain
 
             ENDHLSL
         }

@@ -67,12 +67,11 @@
 
 #define UNITY_SINGLE_PASS_STEREO 1
 
-#define LIGHTLOOP_TILE_PASS 1
 // deferred opaque always use FPTL
 #define USE_FPTL_LIGHTLIST 1
 
 //#pragma enable_d3d11_debug_symbols
-#define ENABLE_RAYTRACING
+//#define ENABLE_RAYTRACING
 
 #ifdef ENABLE_RAYTRACING
 // Uniform variables that defines if we shall be using the shadow area texture or not
@@ -176,6 +175,9 @@ void SHADE_OPAQUE_ENTRY(uint2 dispatchThreadId : SV_DispatchThreadID, uint2 grou
     float3 diffuseLighting;
     float3 specularLighting;
     LightLoop(V, posInput, preLightData, bsdfData, builtinData, featureFlags, diffuseLighting, specularLighting);
+
+    diffuseLighting *= GetCurrentExposureMultiplier();
+    specularLighting *= GetCurrentExposureMultiplier();
 
     if (_EnableSubsurfaceScattering != 0 && ShouldOutputSplitLighting(bsdfData))
     {

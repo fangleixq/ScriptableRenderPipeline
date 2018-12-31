@@ -7,6 +7,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
 {
     using CED = CoreEditorDrawer<SerializedLightLoopSettings>;
     
+
     static class LightLoopSettingsUI
     {
         enum Expandable
@@ -16,15 +17,14 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
 
         readonly static ExpandedState<Expandable, LightLoopSettings> k_ExpandedState = new ExpandedState<Expandable, LightLoopSettings>(Expandable.LightLoop, "HDRP");
         
-        static readonly GUIContent lightLoopSettingsHeaderContent = CoreEditorUtils.GetContent("Light Loop Settings");
+        static readonly GUIContent lightLoopSettingsHeaderContent = EditorGUIUtility.TrTextContent("Light Loop Settings");
 
-        // Uncomment if you re-enable LIGHTLOOP_SINGLE_PASS multi_compile in lit*.shader
-        //static readonly GUIContent tileAndClusterContent = CoreEditorUtils.GetContent("Enable Tile And Cluster");
-        static readonly GUIContent fptlForForwardOpaqueContent = CoreEditorUtils.GetContent("FPTL For Forward Opaque");
-        static readonly GUIContent bigTilePrepassContent = CoreEditorUtils.GetContent("Big Tile Prepass");
-        static readonly GUIContent computeLightEvaluationContent = CoreEditorUtils.GetContent("Compute Light Evaluation");
-        static readonly GUIContent computeLightVariantsContent = CoreEditorUtils.GetContent("Compute Light Variants");
-        static readonly GUIContent computeMaterialVariantsContent = CoreEditorUtils.GetContent("Compute Material Variants");
+        static readonly GUIContent tileAndClusterContent = EditorGUIUtility.TrTextContent("Enable Deferred Tile And Cluster");
+        static readonly GUIContent fptlForForwardOpaqueContent = EditorGUIUtility.TrTextContent("FPTL For Forward Opaque");
+        static readonly GUIContent bigTilePrepassContent = EditorGUIUtility.TrTextContent("Big Tile Prepass");
+        static readonly GUIContent computeLightEvaluationContent = EditorGUIUtility.TrTextContent("Compute Light Evaluation");
+        static readonly GUIContent computeLightVariantsContent = EditorGUIUtility.TrTextContent("Compute Light Variants");
+        static readonly GUIContent computeMaterialVariantsContent = EditorGUIUtility.TrTextContent("Compute Material Variants");
         
         public static CED.IDrawer SectionLightLoopSettings(bool withOverride)
         {
@@ -46,19 +46,18 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 OverridableSettingsArea area = new OverridableSettingsArea(6);
                 FrameSettings defaultFrameSettings = FrameSettingsUI.GetDefaultFrameSettingsFor(owner);
 
-                // Uncomment if you re-enable LIGHTLOOP_SINGLE_PASS multi_compile in lit*.shader
-                //area.Add(p.enableTileAndCluster, tileAndClusterContent, a => p.overridesTileAndCluster = a, () => p.overridesTileAndCluster);
-                //and add indent:1 or indent:2 regarding indentation you want
+                area.Add(serialized.enableFptlForForwardOpaque, fptlForForwardOpaqueContent, () => serialized.overridesFptlForForwardOpaque, a => serialized.overridesFptlForForwardOpaque = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableFptlForForwardOpaque);
+                area.Add(serialized.enableBigTilePrepass, bigTilePrepassContent, () => serialized.overridesBigTilePrepass, a => serialized.overridesBigTilePrepass = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableBigTilePrepass);
 
-                if (serialized.enableTileAndCluster.boolValue)
+                area.Add(serialized.enableDeferredTileAndCluster, tileAndClusterContent, () => serialized.overridesTileAndCluster, a => serialized.overridesTileAndCluster = a);
+
+                if (serialized.enableDeferredTileAndCluster.boolValue)
                 {
-                    area.Add(serialized.enableFptlForForwardOpaque, fptlForForwardOpaqueContent, () => serialized.overridesFptlForForwardOpaque, a => serialized.overridesFptlForForwardOpaque = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableFptlForForwardOpaque);
-                    area.Add(serialized.enableBigTilePrepass, bigTilePrepassContent, () => serialized.overridesBigTilePrepass, a => serialized.overridesBigTilePrepass = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableBigTilePrepass);
-                    area.Add(serialized.enableComputeLightEvaluation, computeLightEvaluationContent, () => serialized.overridesComputeLightEvaluation, a => serialized.overridesComputeLightEvaluation = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableComputeLightEvaluation);
+                    area.Add(serialized.enableComputeLightEvaluation, computeLightEvaluationContent, () => serialized.overridesComputeLightEvaluation, a => serialized.overridesComputeLightEvaluation = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableComputeLightEvaluation, indent: 1);
                     if (serialized.enableComputeLightEvaluation.boolValue)
                     {
-                        area.Add(serialized.enableComputeLightVariants, computeLightVariantsContent, () => serialized.overridesComputeLightVariants, a => serialized.overridesComputeLightVariants = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableComputeLightVariants, indent: 1);
-                        area.Add(serialized.enableComputeMaterialVariants, computeMaterialVariantsContent, () => serialized.overridesComputeMaterialVariants, a => serialized.overridesComputeMaterialVariants = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableComputeMaterialVariants, indent: 1);
+                        area.Add(serialized.enableComputeLightVariants, computeLightVariantsContent, () => serialized.overridesComputeLightVariants, a => serialized.overridesComputeLightVariants = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableComputeLightVariants, indent: 2);
+                        area.Add(serialized.enableComputeMaterialVariants, computeMaterialVariantsContent, () => serialized.overridesComputeMaterialVariants, a => serialized.overridesComputeMaterialVariants = a, defaultValue: defaultFrameSettings.lightLoopSettings.enableComputeMaterialVariants, indent: 2);
                     }
                 }
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.PostProcessing;
 
 namespace UnityEngine.Experimental.Rendering.HDPipeline
 {
@@ -16,6 +15,37 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
         static public HDAdditionalCameraData s_DefaultHDAdditionalCameraData { get { return ComponentSingleton<HDAdditionalCameraData>.instance; } }
         static public AdditionalShadowData s_DefaultAdditionalShadowData { get { return ComponentSingleton<AdditionalShadowData>.instance; } }
 
+        static Texture2D m_ClearTexture;
+        public static Texture2D clearTexture
+        {
+            get
+            {
+                if (m_ClearTexture == null)
+                {
+                    m_ClearTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false) { name = "Clear Texture" };
+                    m_ClearTexture.SetPixel(0, 0, Color.clear);
+                    m_ClearTexture.Apply();
+                }
+
+                return m_ClearTexture;
+            }
+        }
+
+        static Texture3D m_ClearTexture3D;
+        public static Texture3D clearTexture3D
+        {
+            get
+            {
+                if (m_ClearTexture3D == null)
+                {
+                    m_ClearTexture3D = new Texture3D(1, 1, 1, TextureFormat.ARGB32, false) { name = "Transparent Texture 3D" };
+                    m_ClearTexture3D.SetPixel(0, 0, 0, Color.clear);
+                    m_ClearTexture3D.Apply();
+                }
+
+                return m_ClearTexture3D;
+            }
+        }
 
         public static Material GetBlitMaterial()
         {
@@ -310,18 +340,12 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
         public static void BlitCameraTextureStereoDoubleWide(CommandBuffer cmd, RTHandleSystem.RTHandle source)
         {
-#if UNITY_2019_1_OR_NEWER
-            Material finalDoubleWideBlit = GetBlitMaterial();
-            finalDoubleWideBlit.SetTexture(HDShaderIDs._BlitTexture, source);
-            finalDoubleWideBlit.SetFloat(HDShaderIDs._BlitMipLevel, 0.0f);
-            finalDoubleWideBlit.SetVector(HDShaderIDs._BlitScaleBiasRt, new Vector4(1.0f, 1.0f, 0.0f, 0.0f));
-            finalDoubleWideBlit.SetVector(HDShaderIDs._BlitScaleBias, new Vector4(1.0f, 1.0f, 0.0f, 0.0f));
-            int pass = 1; // triangle, bilinear (from Blit.shader)
-            cmd.Blit(source, BuiltinRenderTextureType.CameraTarget, finalDoubleWideBlit, pass);
-#else
-            // Prior to 2019.1's y-flip fixes, we didn't need a flip in the shader
-            cmd.BlitFullscreenTriangle(m_CameraColorBuffer, BuiltinRenderTextureType.CameraTarget);
-#endif
+            var mat = GetBlitMaterial();
+            mat.SetTexture(HDShaderIDs._BlitTexture, source);
+            mat.SetFloat(HDShaderIDs._BlitMipLevel, 0f);
+            mat.SetVector(HDShaderIDs._BlitScaleBiasRt, new Vector4(1f, 1f, 0f, 0f));
+            mat.SetVector(HDShaderIDs._BlitScaleBias, new Vector4(1f, 1f, 0f, 0f));
+            cmd.Blit(source, BuiltinRenderTextureType.CameraTarget, mat, 1);
         }
 
         // These method should be used to render full screen triangles sampling auto-scaling RTs.
@@ -384,29 +408,10 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
             return camera.cameraType == CameraType.Preview && ((additionalCameraData == null) || (additionalCameraData && !additionalCameraData.isEditorCameraPreview));
         }
 
-        // Post-processing misc
-        public static bool IsPostProcessingActive(PostProcessLayer layer)
-        {
-            return layer != null
-                && layer.enabled;
-        }
-
-        public static bool IsTemporalAntialiasingActive(PostProcessLayer layer)
-        {
-            return IsPostProcessingActive(layer)
-                && layer.antialiasingMode == PostProcessLayer.Antialiasing.TemporalAntialiasing
-                && layer.temporalAntialiasing.IsSupported();
-        }
-
         // We need these at runtime for RenderPipelineResources upgrade
         public static string GetHDRenderPipelinePath()
         {
             return "Packages/com.unity.render-pipelines.high-definition/";
-        }
-
-        public static string GetPostProcessingPath()
-        {
-            return "Packages/com.unity.postprocessing/";
         }
 
         public static string GetCorePath()

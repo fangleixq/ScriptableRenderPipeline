@@ -3,7 +3,6 @@ Shader "Hidden/HDRP/Sky/HDRISky"
     HLSLINCLUDE
 
     #pragma vertex Vert
-    #pragma fragment Frag
 
     #pragma target 4.5
     #pragma only_renderers d3d11 ps4 xboxone vulkan metal switch
@@ -40,7 +39,7 @@ Shader "Hidden/HDRP/Sky/HDRISky"
         return output;
     }
 
-    float4 Frag(Varyings input) : SV_Target
+    float4 RenderSky(Varyings input)
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         float3 viewDirWS = GetSkyViewDirWS(input.positionCS.xy, (float3x3)_PixelCoordToViewDirWS);
@@ -59,6 +58,18 @@ Shader "Hidden/HDRP/Sky/HDRISky"
         return float4(skyColor, 1.0);
     }
 
+    float4 FragBaking(Varyings input) : SV_Target
+    {
+        return RenderSky(input);
+    }
+
+    float4 FragRender(Varyings input) : SV_Target
+    {
+        float4 color = RenderSky(input);
+        color.rgb *= GetCurrentExposureMultiplier();
+        return color;
+    }
+
     ENDHLSL
 
     SubShader
@@ -72,8 +83,8 @@ Shader "Hidden/HDRP/Sky/HDRISky"
             Cull Off
 
             HLSLPROGRAM
+                #pragma fragment FragBaking
             ENDHLSL
-
         }
 
         // For fullscreen Sky
@@ -85,6 +96,7 @@ Shader "Hidden/HDRP/Sky/HDRISky"
             Cull Off
 
             HLSLPROGRAM
+                #pragma fragment FragRender
             ENDHLSL
         }
 

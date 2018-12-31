@@ -118,7 +118,6 @@ Shader "HDRP/Lit"
         _TransmittanceColor("Transmittance Color", Color) = (1.0, 1.0, 1.0)
         _TransmittanceColorMap("TransmittanceColorMap", 2D) = "white" {}
         _ATDistance("Transmittance Absorption Distance", Float) = 1.0
-        [ToggleUI] _PreRefractionPass("PreRefractionPass", Float) = 0.0
 
         // Stencil state
         [HideInInspector] _StencilRef("_StencilRef", Int) = 2 // StencilLightingUsage.RegularLighting  (fixed at compile time)
@@ -217,53 +216,53 @@ Shader "HDRP/Lit"
     // Variant
     //-------------------------------------------------------------------------------------
 
-    #pragma shader_feature _ALPHATEST_ON
-    #pragma shader_feature _DEPTHOFFSET_ON
-    #pragma shader_feature _DOUBLESIDED_ON
-    #pragma shader_feature _ _VERTEX_DISPLACEMENT _PIXEL_DISPLACEMENT
-    #pragma shader_feature _VERTEX_DISPLACEMENT_LOCK_OBJECT_SCALE
-    #pragma shader_feature _DISPLACEMENT_LOCK_TILING_SCALE
-    #pragma shader_feature _PIXEL_DISPLACEMENT_LOCK_OBJECT_SCALE
-    #pragma shader_feature _VERTEX_WIND
-    #pragma shader_feature _ _REFRACTION_PLANE _REFRACTION_SPHERE
+    #pragma shader_feature_local _ALPHATEST_ON
+    #pragma shader_feature_local _DEPTHOFFSET_ON
+    #pragma shader_feature_local _DOUBLESIDED_ON
+    #pragma shader_feature_local _ _VERTEX_DISPLACEMENT _PIXEL_DISPLACEMENT
+    #pragma shader_feature_local _VERTEX_DISPLACEMENT_LOCK_OBJECT_SCALE
+    #pragma shader_feature_local _DISPLACEMENT_LOCK_TILING_SCALE
+    #pragma shader_feature_local _PIXEL_DISPLACEMENT_LOCK_OBJECT_SCALE
+    #pragma shader_feature_local _VERTEX_WIND
+    #pragma shader_feature_local _ _REFRACTION_PLANE _REFRACTION_SPHERE
 
-    #pragma shader_feature _ _EMISSIVE_MAPPING_PLANAR _EMISSIVE_MAPPING_TRIPLANAR
-    #pragma shader_feature _ _MAPPING_PLANAR _MAPPING_TRIPLANAR
-    #pragma shader_feature _NORMALMAP_TANGENT_SPACE
-    #pragma shader_feature _ _REQUIRE_UV2 _REQUIRE_UV3
+    #pragma shader_feature_local _ _EMISSIVE_MAPPING_PLANAR _EMISSIVE_MAPPING_TRIPLANAR
+    #pragma shader_feature_local _ _MAPPING_PLANAR _MAPPING_TRIPLANAR
+    #pragma shader_feature_local _NORMALMAP_TANGENT_SPACE
+    #pragma shader_feature_local _ _REQUIRE_UV2 _REQUIRE_UV3
 
-    #pragma shader_feature _NORMALMAP
-    #pragma shader_feature _MASKMAP
-    #pragma shader_feature _BENTNORMALMAP
-    #pragma shader_feature _EMISSIVE_COLOR_MAP
-    #pragma shader_feature _ENABLESPECULAROCCLUSION
-    #pragma shader_feature _HEIGHTMAP
-    #pragma shader_feature _TANGENTMAP
-    #pragma shader_feature _ANISOTROPYMAP
-    #pragma shader_feature _DETAIL_MAP
-    #pragma shader_feature _SUBSURFACE_MASK_MAP
-    #pragma shader_feature _THICKNESSMAP
-    #pragma shader_feature _IRIDESCENCE_THICKNESSMAP
-    #pragma shader_feature _SPECULARCOLORMAP
-    #pragma shader_feature _TRANSMITTANCECOLORMAP
+    #pragma shader_feature_local _NORMALMAP
+    #pragma shader_feature_local _MASKMAP
+    #pragma shader_feature_local _BENTNORMALMAP
+    #pragma shader_feature_local _EMISSIVE_COLOR_MAP
+    #pragma shader_feature_local _ENABLESPECULAROCCLUSION
+    #pragma shader_feature_local _HEIGHTMAP
+    #pragma shader_feature_local _TANGENTMAP
+    #pragma shader_feature_local _ANISOTROPYMAP
+    #pragma shader_feature_local _DETAIL_MAP
+    #pragma shader_feature_local _SUBSURFACE_MASK_MAP
+    #pragma shader_feature_local _THICKNESSMAP
+    #pragma shader_feature_local _IRIDESCENCE_THICKNESSMAP
+    #pragma shader_feature_local _SPECULARCOLORMAP
+    #pragma shader_feature_local _TRANSMITTANCECOLORMAP
 
-    #pragma shader_feature _DISABLE_DECALS
-    #pragma shader_feature _DISABLE_SSR
-    #pragma shader_feature _ENABLE_GEOMETRIC_SPECULAR_AA
+    #pragma shader_feature_local _DISABLE_DECALS
+    #pragma shader_feature_local _DISABLE_SSR
+    #pragma shader_feature_local _ENABLE_GEOMETRIC_SPECULAR_AA
 
     // Keyword for transparent
     #pragma shader_feature _SURFACE_TYPE_TRANSPARENT
-    #pragma shader_feature _ _BLENDMODE_ALPHA _BLENDMODE_ADD _BLENDMODE_PRE_MULTIPLY
-    #pragma shader_feature _BLENDMODE_PRESERVE_SPECULAR_LIGHTING
-    #pragma shader_feature _ENABLE_FOG_ON_TRANSPARENT
+    #pragma shader_feature_local _ _BLENDMODE_ALPHA _BLENDMODE_ADD _BLENDMODE_PRE_MULTIPLY
+    #pragma shader_feature_local _BLENDMODE_PRESERVE_SPECULAR_LIGHTING
+    #pragma shader_feature_local _ENABLE_FOG_ON_TRANSPARENT
 
     // MaterialFeature are used as shader feature to allow compiler to optimize properly
-    #pragma shader_feature _MATERIAL_FEATURE_SUBSURFACE_SCATTERING
-    #pragma shader_feature _MATERIAL_FEATURE_TRANSMISSION
-    #pragma shader_feature _MATERIAL_FEATURE_ANISOTROPY
-    #pragma shader_feature _MATERIAL_FEATURE_CLEAR_COAT
-    #pragma shader_feature _MATERIAL_FEATURE_IRIDESCENCE
-    #pragma shader_feature _MATERIAL_FEATURE_SPECULAR_COLOR
+    #pragma shader_feature_local _MATERIAL_FEATURE_SUBSURFACE_SCATTERING
+    #pragma shader_feature_local _MATERIAL_FEATURE_TRANSMISSION
+    #pragma shader_feature_local _MATERIAL_FEATURE_ANISOTROPY
+    #pragma shader_feature_local _MATERIAL_FEATURE_CLEAR_COAT
+    #pragma shader_feature_local _MATERIAL_FEATURE_IRIDESCENCE
+    #pragma shader_feature_local _MATERIAL_FEATURE_SPECULAR_COLOR
 
     // enable dithering LOD crossfade
     #pragma multi_compile _ LOD_FADE_CROSSFADE
@@ -275,6 +274,7 @@ Shader "HDRP/Lit"
     //-------------------------------------------------------------------------------------
     // Define
     //-------------------------------------------------------------------------------------
+
     // This shader support vertex modification
     #define HAVE_VERTEX_MODIFICATION
 
@@ -326,8 +326,6 @@ Shader "HDRP/Lit"
 
             HLSLPROGRAM
 
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
             // Note: Require _ObjectId and _PassValue variables
 
             // We reuse depth prepass for the scene selection, allow to handle alpha correctly as well as tessellation and vertex animation
@@ -364,8 +362,6 @@ Shader "HDRP/Lit"
             }
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             #pragma multi_compile _ DEBUG_DISPLAY
             #pragma multi_compile _ LIGHTMAP_ON
@@ -409,8 +405,6 @@ Shader "HDRP/Lit"
             Cull Off
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             // Lightmap memo
             // DYNAMICLIGHTMAP_ON is used when we have an "enlighten lightmap" ie a lightmap updated at runtime by enlighten.This lightmap contain indirect lighting from realtime lights and realtime emissive material.Offline baked lighting(from baked material / light,
@@ -444,8 +438,6 @@ Shader "HDRP/Lit"
             ColorMask 0
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             #define SHADERPASS SHADERPASS_SHADOWS
             #define USE_LEGACY_UNITY_MATRIX_VARIABLES
@@ -482,8 +474,6 @@ Shader "HDRP/Lit"
             ZWrite On
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             // In deferred, depth only pass don't output anything.
             // In forward it output the normal buffer
@@ -529,9 +519,6 @@ Shader "HDRP/Lit"
             ZWrite On
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
-
             #pragma multi_compile _ WRITE_NORMAL_BUFFER
             #pragma multi_compile _ WRITE_MSAA_DEPTH
             
@@ -565,8 +552,6 @@ Shader "HDRP/Lit"
             Cull [_CullMode]
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             #define SHADERPASS SHADERPASS_DISTORTION
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
@@ -592,8 +577,6 @@ Shader "HDRP/Lit"
             ColorMask 0
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             #define SHADERPASS SHADERPASS_DEPTH_ONLY
             #define CUTOFF_TRANSPARENT_DEPTH_PREPASS
@@ -621,8 +604,6 @@ Shader "HDRP/Lit"
             Cull Front
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
 
             #pragma multi_compile _ DEBUG_DISPLAY
             #pragma multi_compile _ LIGHTMAP_ON
@@ -633,11 +614,8 @@ Shader "HDRP/Lit"
             #pragma multi_compile DECALS_OFF DECALS_3RT DECALS_4RT
             
             // Supported shadow modes per light type
-            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH
+            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH SHADOW_VERY_HIGH
 
-            // #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/Lighting/Forward.hlsl"
-            //#pragma multi_compile LIGHTLOOP_SINGLE_PASS LIGHTLOOP_TILE_PASS
-            #define LIGHTLOOP_TILE_PASS
             #define USE_CLUSTERED_LIGHTLIST // There is not FPTL lighting when using transparent
 
             #define SHADERPASS SHADERPASS_FORWARD
@@ -704,11 +682,8 @@ Shader "HDRP/Lit"
             #pragma multi_compile DECALS_OFF DECALS_3RT DECALS_4RT
             
             // Supported shadow modes per light type
-            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH
+            #pragma multi_compile SHADOW_LOW SHADOW_MEDIUM SHADOW_HIGH SHADOW_VERY_HIGH
 
-            // #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/Lighting/Forward.hlsl"
-            //#pragma multi_compile LIGHTLOOP_SINGLE_PASS LIGHTLOOP_TILE_PASS
-            #define LIGHTLOOP_TILE_PASS
             #pragma multi_compile USE_FPTL_LIGHTLIST USE_CLUSTERED_LIGHTLIST
 
             #define SHADERPASS SHADERPASS_FORWARD
@@ -758,9 +733,6 @@ Shader "HDRP/Lit"
             ColorMask 0
 
             HLSLPROGRAM
-            // Use surface gradient normal mapping as it handle correctly triplanar normal mapping and multiple UVSet
-            #define SURFACE_GRADIENT
-            
             #define SHADERPASS SHADERPASS_DEPTH_ONLY
             #define CUTOFF_TRANSPARENT_DEPTH_POSTPASS
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
@@ -777,6 +749,7 @@ Shader "HDRP/Lit"
         }
     }
 
+    /*
     SubShader
     {
         Pass
@@ -846,6 +819,7 @@ Shader "HDRP/Lit"
             ENDHLSL
         }
     }
+    */
 
     CustomEditor "Experimental.Rendering.HDPipeline.LitGUI"
 }

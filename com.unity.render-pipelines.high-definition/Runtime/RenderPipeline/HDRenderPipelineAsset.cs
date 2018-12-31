@@ -4,6 +4,13 @@ using UnityEngine.Serialization;
 
 namespace UnityEngine.Experimental.Rendering.HDPipeline
 {
+    public enum ShaderVariantLogLevel
+    {
+        Disabled,
+        OnlyHDRPShaders,
+        AllShaders,
+    }
+
     // The HDRenderPipeline assumes linear lighting. Doesn't work with gamma.
     public class HDRenderPipelineAsset : RenderPipelineAsset, ISerializationCallbackReceiver
     {
@@ -155,8 +162,8 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
         }
 
         public bool allowShaderVariantStripping = true;
-        public bool enableSRPBatcher = false;
-        public bool enableVariantStrippingLog = false;
+        public bool enableSRPBatcher = true;
+        public ShaderVariantLogLevel shaderVariantLogLevel = ShaderVariantLogLevel.Disabled;
 
         [SerializeField]
         public DiffusionProfileSettings diffusionProfileSettings;

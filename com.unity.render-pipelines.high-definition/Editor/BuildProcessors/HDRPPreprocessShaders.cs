@@ -24,28 +24,37 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                         return true;
             }
 
+            // Remove editor only pass
             bool isSceneSelectionPass = snippet.passName == "SceneSelectionPass";
             if (isSceneSelectionPass)
                 return true;
 
+            // CAUTION: We can't identify transparent material in the stripped in a general way.
+            // Shader Graph don't produce any keyword - However it will only generate the pass that are required, so it already handle transparent (Note that shader Graph still define _SURFACE_TYPE_TRANSPARENT but as a #define)
+            // For inspector version of shader, we identify transparent with a shader feature _SURFACE_TYPE_TRANSPARENT.
+            // Only our Lit (and inherited) shader use _SURFACE_TYPE_TRANSPARENT, so the specific stripping based on this keyword is in LitShadePreprocessor.
+            // Here we can't strip based on opaque or transparent but we will strip based on HDRP Asset configuration.
+
             bool isMotionPass = snippet.passName == "Motion Vectors";
-            if (!hdrpAsset.renderPipelineSettings.supportMotionVectors && isMotionPass)
+            bool isTransparentPrepass = snippet.passName == "TransparentDepthPrepass";
+            bool isTransparentPostpass = snippet.passName == "TransparentDepthPostpass";
+            bool isTransparentBackface = snippet.passName == "TransparentBackface";
+            bool isDistortionPass = snippet.passName == "DistortionVectors";
+
+            if (isMotionPass && !hdrpAsset.renderPipelineSettings.supportMotionVectors)
                 return true;
 
-            //bool isForwardPass = (snippet.passName == "Forward") || (snippet.passName == "ForwardOnly");
+            if (isDistortionPass && !hdrpAsset.renderPipelineSettings.supportDistortion)
+                return true;
 
-            if (inputData.shaderKeywordSet.IsEnabled(m_Transparent))
-            {
-                // If we are transparent we use cluster lighting and not tile lighting
-                if (inputData.shaderKeywordSet.IsEnabled(m_TileLighting))
-                    return true;
-            }
-            else // Opaque
-            {
-                // Note: we can't assume anything regarding tile/cluster for opaque as multiple view could used different settings and it depends on MSAA
-            }
+            if (isTransparentBackface && !hdrpAsset.renderPipelineSettings.supportTransparentBackface)
+                return true;
 
-            // TODO: If static lighting we can remove meta pass, but how to know that?
+            if (isTransparentPrepass && !hdrpAsset.renderPipelineSettings.supportTransparentDepthPrepass)
+                return true;
+
+            if (isTransparentPostpass && !hdrpAsset.renderPipelineSettings.supportTransparentDepthPostpass)
+                return true;
 
             // If we are in a release build, don't compile debug display variant
             // Also don't compile it if not requested by the render pipeline settings
@@ -77,10 +86,6 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 if (inputData.shaderKeywordSet.IsEnabled(m_Decals3RT) || inputData.shaderKeywordSet.IsEnabled(m_Decals4RT))
                     return true;
             }
-
-            if (inputData.shaderKeywordSet.IsEnabled(m_LightLayers) && !hdrpAsset.renderPipelineSettings.supportLightLayers)
-                return true;
-
            
             if (inputData.shaderKeywordSet.IsEnabled(m_WriteMSAADepth) && !hdrpAsset.renderPipelineSettings.supportMSAA)
                 return true;
@@ -112,9 +117,10 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             materialList = HDEditorUtils.GetBaseShaderPreprocessorList();
         }
 
-        void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, uint prevVariantsCount, uint currVariantsCount)
+        void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, ShaderVariantLogLevel logLevel, uint prevVariantsCount, uint currVariantsCount)
         {
-            if (shader.name.Contains("HDRenderPipeline"))
+            if (logLevel == ShaderVariantLogLevel.AllShaders ||
+                (logLevel == ShaderVariantLogLevel.OnlyHDRPShaders && shader.name.Contains("HDRP")))
             {
                 float percentageCurrent = ((float)currVariantsCount / prevVariantsCount) * 100.0f;
                 float percentageTotal = ((float)m_TotalVariantsOutputCount / m_TotalVariantsInputCount) * 100.0f;
@@ -165,11 +171,11 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 }
             }
 
-            if(hdPipelineAsset.enableVariantStrippingLog)
+            if (hdPipelineAsset.shaderVariantLogLevel != ShaderVariantLogLevel.Disabled)
             {
                 m_TotalVariantsInputCount += preStrippingCount;
                 m_TotalVariantsOutputCount += (uint)inputData.Count;
-                LogShaderVariants(shader, snippet, preStrippingCount, (uint)inputData.Count);
+                LogShaderVariants(shader, snippet, hdPipelineAsset.shaderVariantLogLevel, preStrippingCount, (uint)inputData.Count);
             }
         }
     }
