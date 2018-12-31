@@ -7,6 +7,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
 {
     internal class SerializedHDRaytracingEnvironment
     {
+#if ENABLE_RAYTRACING
+
         public SerializedObject serializedObject;
 
         // Generic Attributes
@@ -87,5 +89,6 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         {
             serializedObject.ApplyModifiedProperties();
         }
+#endif
     }
 }

@@ -723,7 +723,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                     cmd.SetGlobalTexture(HDShaderIDs._SsrLightingTexture, m_SsrLightingTexture);
                 else
                     cmd.SetGlobalTexture(HDShaderIDs._SsrLightingTexture, HDUtils.clearTexture);
-?#if ENABLE_RAYTRACING
+#if ENABLE_RAYTRACING
                 // Push the preintergrated textures
                 PreIntegratedFGD.instance.Bind(cmd, PreIntegratedFGD.FGDIndex.FGD_GGXAndDisneyDiffuse);
                 PreIntegratedFGD.instance.Bind(cmd, PreIntegratedFGD.FGDIndex.FGD_CharlieAndFabricLambert);
@@ -1479,7 +1479,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 if (!hdCamera.frameSettings.SSRRunsAsync())
                 {
                     // Needs the depth pyramid and motion vectors, as well as the render of the previous frame.
-                    RenderSSR(hdCamera, cmd);
+                    RenderSSR(hdCamera, cmd, renderContext);
                 }
 
 
@@ -1534,7 +1534,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 {
                     SSRTask.Start(cmd, renderContext, (CommandBuffer asyncCmd) =>
                     {
-                        RenderSSR(hdCamera, asyncCmd);
+                        RenderSSR(hdCamera, asyncCmd, renderContext);
                     }, !haveAsyncTaskWithShadows);
 
                     haveAsyncTaskWithShadows = true;

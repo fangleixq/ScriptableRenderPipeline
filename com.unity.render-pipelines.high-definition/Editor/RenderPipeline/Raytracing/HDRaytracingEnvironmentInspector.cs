@@ -8,6 +8,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
     [CustomEditor(typeof(HDRaytracingEnvironment))]
     public class HDRaytracingEnvironmentInspector : Editor
     {
+#if ENABLE_RAYTRACING
         protected static class Styles
         {
             // Generic 
@@ -181,5 +182,6 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             Inspector.Draw(m_SerializedHDRaytracingEnvironment, this);
             m_SerializedHDRaytracingEnvironment.Apply();
         }
+#endif
     }
 }
