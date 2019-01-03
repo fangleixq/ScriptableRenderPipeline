@@ -419,7 +419,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                     }
                 }
 
-                Color finalColor = LightUtils.CorrelatedColorTemperatureToRGB(light.colorTemperature);
+                Color finalColor = Mathf.CorrelatedColorTemperatureToRGB(light.colorTemperature);
                 GlobalIllumination.LinearColor converted = GlobalIllumination.LinearColor.Convert(light.color, light.intensity);
                 finalColor.r *= converted.red;
                 finalColor.g *= converted.green;
